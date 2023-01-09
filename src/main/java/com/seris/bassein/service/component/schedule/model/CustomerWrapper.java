@@ -5,6 +5,8 @@ import lombok.Data;
 
 @Data
 public class CustomerWrapper {
+    private Long id;
     private Customer customer;
     private String time;
+    private boolean came;
 }

@@ -20,4 +20,14 @@ public record ScheduleController(
     public ResponseEntity<Response> findWeekSchedule() {
         return scheduleService.findWeekSchedule();
     }
+
+    @GetMapping("/came")
+    public ResponseEntity<Response> markAsCame(@RequestParam("came") Long id) {
+        return scheduleService.markAsCame(id);
+    }
+
+    @GetMapping("/customer")
+    public ResponseEntity<Response> findAllByCustomerRegNo(@RequestParam("regNo") String regNo) {
+        return scheduleService.findAllByCustomerRegNo(regNo);
+    }
 }

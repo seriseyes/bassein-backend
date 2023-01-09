@@ -13,7 +13,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 /**
- * Үйлчлгүүлэгч
+ * Үйлчлүүлэгч
  *
  * @author Bayarkhuu.Luv 2023.01.06
  */

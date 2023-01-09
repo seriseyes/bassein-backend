@@ -10,6 +10,7 @@ import com.seris.bassein.service.component.schedule.model.CustomerWrapper;
 import com.seris.bassein.service.component.schedule.model.ScheduleDto;
 import com.seris.bassein.service.component.schedule.model.ScheduleWrapper;
 import com.seris.bassein.service.component.schedule.repository.ScheduleRepository;
+import com.seris.bassein.service.component.user.repository.CustomerRepository;
 import com.seris.bassein.util.Validator;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,17 +18,21 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 @Service
 public record ScheduleService(
         EntityManager entityManager,
         ScheduleRepository scheduleRepository,
+        CustomerRepository customerRepository,
         Map<DayOfWeek, String> daysMap
 ) {
 
@@ -67,13 +72,27 @@ public record ScheduleService(
 
         List<Schedule> schedules = queryFactory.selectFrom(qSchedule).where(qSchedule.day.gt(qSchedule.enter)).fetch();
 
+        Function<Schedule, CustomerWrapper> mapper = (e -> {
+            CustomerWrapper customerWrapper = new CustomerWrapper();
+            customerWrapper.setId(e.getId());
+            customerWrapper.setCustomer(e.getCustomer());
+            customerWrapper.setTime(e.getPlans().stream().findFirst().map(ex -> ex.getTime().format(DateTimeFormatter.ofPattern("HH:mm"))).orElse(""));
+            customerWrapper.setCame(e.getEnterDates() != null && !e.getEnterDates().isEmpty() && e.getEnterDates().stream().anyMatch(a -> a.toLocalDate().equals(LocalDate.now())));
+            return customerWrapper;
+        });
+
         BiConsumer<Consumer<List<CustomerWrapper>>, Integer> filter = (fn, day) -> {
-            List<CustomerWrapper> today = schedules.stream().filter(f -> f.getPlans().stream().anyMatch(a -> a.getWeek() == day)).map(e -> {
-                CustomerWrapper customerWrapper = new CustomerWrapper();
-                customerWrapper.setCustomer(e.getCustomer());
-                customerWrapper.setTime(e.getPlans().stream().findFirst().map(ex -> ex.getTime().format(DateTimeFormatter.ofPattern("HH:mm"))).orElse(""));
-                return customerWrapper;
-            }).toList();
+            List<CustomerWrapper> today = new ArrayList<>(schedules.stream().filter(f -> f.getPlans().stream().anyMatch(a -> a.getWeek() == day)).map(mapper).toList());
+            today.addAll(queryFactory
+                    .selectFrom(qSchedule)
+                    .where(qSchedule.customer.notIn(today.stream().map(CustomerWrapper::getCustomer).toList()))
+                    .fetch()
+                    .stream()
+                    .filter(f -> f.getEnterDates() != null && f.getEnterDates().stream().anyMatch(a -> a.toLocalDate().equals(LocalDate.now())))
+                    .map(mapper)
+                    .toList()
+            );
+
             fn.accept(today);
 
             if (!model.isExist() && !today.isEmpty()) {
@@ -96,5 +115,24 @@ public record ScheduleService(
         model.setDay(dayOfWeek.ordinal() + 1);
         model.setDayName(daysMap.get(dayOfWeek));
         return Response.success(model);
+    }
+
+    public ResponseEntity<Response> markAsCame(Long id) {
+        Optional<Schedule> model = scheduleRepository.findById(id);
+        if (model.isEmpty()) return Response.error("Алдаа гарлаа [S000]");
+        model.get().setEnter(model.get().getEnter() + 1);
+        List<LocalDateTime> enterDates = model.get().getEnterDates();
+        if (enterDates == null) enterDates = new ArrayList<>();
+        enterDates.add(LocalDateTime.now());
+        model.get().setEnterDates(enterDates);
+        scheduleRepository.save(model.get());
+        return Response.success("Үйлдэл амжилттай");
+    }
+
+    public ResponseEntity<Response> findAllByCustomerRegNo(String regNo) {
+        if (!customerRepository.existsByRegNo(regNo))
+            return Response.error(regNo + " регистрийн дугаараар бүртгэлтэй үйлчлүүлэгч олдсонгүй");
+        List<Schedule> models = scheduleRepository.findAllByCustomer_RegNo(regNo);
+        return models.isEmpty() ? Response.error("Уг үйлчлүүлэгчид бүртгэлтэй хуваарь олдсонгүй") : Response.success(models);
     }
 }
