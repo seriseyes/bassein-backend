@@ -1,9 +1,12 @@
 package com.seris.bassein.service.security.controller;
 
+import com.seris.bassein.entity.settings.Settings;
 import com.seris.bassein.entity.user.Bassein;
 import com.seris.bassein.entity.user.User;
 import com.seris.bassein.enums.Role;
+import com.seris.bassein.enums.Status;
 import com.seris.bassein.service.component.schedule.ScheduleService;
+import com.seris.bassein.service.component.settings.repository.SettingsRepository;
 import com.seris.bassein.service.component.user.UserService;
 import com.seris.bassein.service.component.user.model.Day;
 import com.seris.bassein.service.component.user.repository.BasseinRepository;
@@ -38,7 +41,8 @@ public record AuthController(
         AuthenticationManager authenticationManager,
         UserRepository userRepository,
         UserService userService,
-        BasseinRepository basseinRepository
+        BasseinRepository basseinRepository,
+        SettingsRepository settingsRepository
 ) {
 
 
@@ -63,11 +67,10 @@ public record AuthController(
         user.setUsername("admin");
         user.setPassword("1234");
         user.setRole(Role.RECEPTION);
-        return ResponseEntity.ok("username: admin, password: 1234, message: " + userService.save(user).getBody());
-    }
+        userService.save(user);
+        user = userRepository.findFirstByUsername("admin").orElse(null);
+        if (user == null) return ResponseEntity.ok("ERROR");
 
-    @GetMapping("/create/bassein")
-    public ResponseEntity<String> createBaseBasein() {
         List<Day> workingDays = new ArrayList<>();
         workingDays.add(new Day(LocalTime.of(7, 0), LocalTime.of(8, 0)));
         workingDays.add(new Day(LocalTime.of(7, 45), LocalTime.of(8, 45)));
@@ -115,7 +118,17 @@ public record AuthController(
 
         basseinRepository.save(model);
 
-        return ResponseEntity.ok("Басейн үүсгэгдлээ.");
+        settingsRepository.saveAll(List.of(
+                Settings.builder().label("Гэр бүл").name("discount").user(user).status(Status.ACTIVE).value(40000).has(false).build(),
+                Settings.builder().label("Сургалт").name("swimType").user(user).status(Status.ACTIVE).value(120000).has(true).build(),
+                Settings.builder().label("Чөлөөт").name("swimType").user(user).status(Status.ACTIVE).value(80000).has(false).build(),
+                Settings.builder().label("Дугуйлан").name("swimType").user(user).status(Status.ACTIVE).value(100000).has(false).build(),
+                Settings.builder().label("Ганцаарчилсан").name("swimType").user(user).status(Status.ACTIVE).value(200000).has(true).build(),
+                Settings.builder().label("Байгууллага").name("discount").user(user).status(Status.ACTIVE).value(30000).has(false).build(),
+                Settings.builder().label("Сургууль").name("discount").user(user).status(Status.ACTIVE).value(30000).has(false).build()
+        ));
+
+        return ResponseEntity.ok("username: admin, password: 1234");
     }
 
     public void authenticate(String username, String password) throws Exception {

@@ -4,8 +4,7 @@ import com.seris.bassein.annotations.Attribute;
 import com.seris.bassein.entity.BaseModel;
 import com.seris.bassein.entity.user.User;
 import com.seris.bassein.enums.Status;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Column;
@@ -17,6 +16,9 @@ import javax.validation.constraints.NotNull;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Settings extends BaseModel {
     @Attribute("Нэр")
     @NotNull
