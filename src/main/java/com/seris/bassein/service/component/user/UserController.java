@@ -52,4 +52,9 @@ public record UserController(
     public ResponseEntity<Response> findCustomerByRegNo(@RequestParam("regNo") String regNo) {
         return service.findCustomerByRegNo(regNo);
     }
+
+    @GetMapping("/all/teacher")
+    public ResponseEntity<Response> findAllTeacher() {
+        return service.findAllTeacher();
+    }
 }

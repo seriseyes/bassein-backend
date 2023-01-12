@@ -41,6 +41,17 @@ public class Customer extends BaseModel {
     @Column(unique = true)
     private String regNo;
 
+    @Attribute(value = "Утас", trim = true, upper = true, noSpace = true)
+    @NotNull
+    @NotEmpty
+    @Length(min = 8, max = 8)
+    @Column(unique = true)
+    private String phone;
+
     @NotNull
     private Status status;
+
+    public String getFullname() {
+        return lastname.charAt(0) + ". " + firstname;
+    }
 }

@@ -10,7 +10,8 @@ import java.util.Optional;
 
 @Repository
 public interface CustomerRepository extends BaseRepository<Customer> {
-    Optional<Customer> findFirstByRegNo(String regNo);
+
+    Optional<Customer> findFirstByRegNoOrPhone(String regNo, String phone);
 
     List<Customer> findAllByStatus(Status status);
 

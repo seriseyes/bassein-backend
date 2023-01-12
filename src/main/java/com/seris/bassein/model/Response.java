@@ -44,4 +44,12 @@ public class Response {
                 .message(message)
                 .build());
     }
+
+    public static ResponseEntity<Response> error(String message, Object data) {
+        return ResponseEntity.ok(Response.builder()
+                .state(State.ERROR)
+                .message(message)
+                .data(data)
+                .build());
+    }
 }

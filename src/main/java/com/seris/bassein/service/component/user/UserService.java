@@ -2,6 +2,7 @@ package com.seris.bassein.service.component.user;
 
 import com.seris.bassein.entity.user.Customer;
 import com.seris.bassein.entity.user.User;
+import com.seris.bassein.enums.Role;
 import com.seris.bassein.enums.Status;
 import com.seris.bassein.model.Response;
 import com.seris.bassein.model.Validation;
@@ -54,10 +55,6 @@ public record UserService(
         return ResponseEntity.ok(map);
     }
 
-    public User findCurrentUser() {
-        return userRepository.findFirstByUuid(Utils.getCurrentUserId()).orElse(null);
-    }
-
     public ResponseEntity<Response> findAll() {
         return Response.success(userRepository.findAll());
     }
@@ -90,6 +87,10 @@ public record UserService(
     }
 
     public ResponseEntity<Response> findCustomerByRegNo(String regNo) {
-        return customerRepository.findFirstByRegNo(regNo).map(e -> Response.success(e.getRegNo() + " үйлчлүүлэгч олдлоо", e)).orElse(Response.error("Регистрийн дугаараар үйлчлүүлэгч олдсонгүй"));
+        return customerRepository.findFirstByRegNoOrPhone(regNo, regNo).map(e -> Response.success(e.getRegNo() + " үйлчлүүлэгч олдлоо", e)).orElse(Response.error("Регистрийн дугаараар үйлчлүүлэгч олдсонгүй"));
+    }
+
+    public ResponseEntity<Response> findAllTeacher() {
+        return Response.success(userRepository.findAllByRoleAndStatus(Role.TEACHER, Status.ACTIVE));
     }
 }

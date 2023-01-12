@@ -49,4 +49,8 @@ public class User extends BaseModel {
     @Attribute("Хэрэглэгчийн эрх")
     @NotNull(message = "Эрх тодорхойгүй байна")
     private Role role;
+
+    public String getFullname() {
+        return lastname.charAt(0) + ". " + firstname;
+    }
 }

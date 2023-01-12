@@ -2,22 +2,21 @@ package com.seris.bassein.entity.schedule;
 
 import com.seris.bassein.annotations.Attribute;
 import com.seris.bassein.entity.BaseModel;
+import com.seris.bassein.entity.settings.Settings;
 import com.seris.bassein.entity.user.Customer;
-import com.seris.bassein.service.component.schedule.model.TimePer;
+import com.seris.bassein.entity.user.User;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.hibernate.annotations.Type;
+import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
+@NoArgsConstructor
 public class Schedule extends BaseModel {
 
     @Attribute(value = "Үйлчлүүлэгч", skip = true)
@@ -31,13 +30,20 @@ public class Schedule extends BaseModel {
     @Attribute(value = "Хэдэн удаа явсан")
     private int enter;
 
-    @Attribute(value = "Явсан огноонууд")
-    @Type(type = "json")
-    @Column(columnDefinition = "TEXT")
-    private List<LocalDateTime> enterDates;
+    @Attribute("Хөнгөлөлт")
+    @ManyToOne
+    private Settings discount;
 
-    @Attribute("Төлөвлөгөө")
-    @Type(type = "json")
-    @Column(columnDefinition = "TEXT")
-    private List<TimePer> plans;
+    @Attribute("Төрөл")
+    @NotNull
+    @ManyToOne
+    private Settings swimType;
+
+    @Attribute("Багш")
+    @ManyToOne
+    private User teacher;
+
+    public Schedule(Customer customer) {
+        this.customer = customer;
+    }
 }

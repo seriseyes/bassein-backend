@@ -1,8 +1,12 @@
 package com.seris.bassein.service.security.controller;
 
+import com.seris.bassein.entity.user.Bassein;
 import com.seris.bassein.entity.user.User;
 import com.seris.bassein.enums.Role;
+import com.seris.bassein.service.component.schedule.ScheduleService;
 import com.seris.bassein.service.component.user.UserService;
+import com.seris.bassein.service.component.user.model.Day;
+import com.seris.bassein.service.component.user.repository.BasseinRepository;
 import com.seris.bassein.service.component.user.repository.UserRepository;
 import com.seris.bassein.service.security.config.JwtTokenUtil;
 import com.seris.bassein.service.security.model.JwtRequest;
@@ -20,6 +24,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -30,7 +37,8 @@ public record AuthController(
         JwtUserDetailsService userDetailsService,
         AuthenticationManager authenticationManager,
         UserRepository userRepository,
-        UserService userService
+        UserService userService,
+        BasseinRepository basseinRepository
 ) {
 
 
@@ -54,8 +62,60 @@ public record AuthController(
         user.setLastname("admin");
         user.setUsername("admin");
         user.setPassword("1234");
-        user.setRole(Role.ADMIN);
+        user.setRole(Role.RECEPTION);
         return ResponseEntity.ok("username: admin, password: 1234, message: " + userService.save(user).getBody());
+    }
+
+    @GetMapping("/create/bassein")
+    public ResponseEntity<String> createBaseBasein() {
+        List<Day> workingDays = new ArrayList<>();
+        workingDays.add(new Day(LocalTime.of(7, 0), LocalTime.of(8, 0)));
+        workingDays.add(new Day(LocalTime.of(7, 45), LocalTime.of(8, 45)));
+        workingDays.add(new Day(LocalTime.of(8, 30), LocalTime.of(9, 30)));
+        workingDays.add(new Day(LocalTime.of(9, 15), LocalTime.of(10, 15)));
+        workingDays.add(new Day(LocalTime.of(10, 0), LocalTime.of(11, 0)));
+        workingDays.add(new Day(LocalTime.of(10, 45), LocalTime.of(11, 45)));
+        workingDays.add(new Day(LocalTime.of(11, 30), LocalTime.of(12, 30)));
+        workingDays.add(new Day(LocalTime.of(12, 15), LocalTime.of(13, 15)));
+
+        workingDays.add(new Day(LocalTime.of(14, 15), LocalTime.of(15, 15)));
+        workingDays.add(new Day(LocalTime.of(15, 0), LocalTime.of(16, 0)));
+        workingDays.add(new Day(LocalTime.of(15, 45), LocalTime.of(16, 45)));
+        workingDays.add(new Day(LocalTime.of(16, 30), LocalTime.of(17, 30)));
+        workingDays.add(new Day(LocalTime.of(17, 15), LocalTime.of(18, 15)));
+        workingDays.add(new Day(LocalTime.of(18, 0), LocalTime.of(19, 0)));
+        workingDays.add(new Day(LocalTime.of(18, 45), LocalTime.of(19, 45)));
+        workingDays.add(new Day(LocalTime.of(19, 30), LocalTime.of(20, 0)));
+
+        List<Day> weekend = new ArrayList<>();
+        weekend.add(new Day(LocalTime.of(7, 45), LocalTime.of(8, 45)));
+        weekend.add(new Day(LocalTime.of(8, 30), LocalTime.of(9, 30)));
+        weekend.add(new Day(LocalTime.of(9, 15), LocalTime.of(10, 15)));
+        weekend.add(new Day(LocalTime.of(10, 0), LocalTime.of(11, 0)));
+        weekend.add(new Day(LocalTime.of(10, 45), LocalTime.of(11, 45)));
+        weekend.add(new Day(LocalTime.of(11, 30), LocalTime.of(12, 30)));
+        weekend.add(new Day(LocalTime.of(12, 15), LocalTime.of(13, 15)));
+
+        weekend.add(new Day(LocalTime.of(14, 15), LocalTime.of(15, 15)));
+        weekend.add(new Day(LocalTime.of(15, 0), LocalTime.of(16, 0)));
+        weekend.add(new Day(LocalTime.of(15, 45), LocalTime.of(16, 45)));
+        weekend.add(new Day(LocalTime.of(16, 30), LocalTime.of(17, 30)));
+        weekend.add(new Day(LocalTime.of(17, 15), LocalTime.of(18, 15)));
+        weekend.add(new Day(LocalTime.of(18, 0), LocalTime.of(19, 0)));
+        weekend.add(new Day(LocalTime.of(18, 45), LocalTime.of(19, 45)));
+
+        Bassein model = new Bassein();
+        model.setMonday(workingDays);
+        model.setTuesday(workingDays);
+        model.setWednesday(workingDays);
+        model.setThursday(workingDays);
+        model.setFriday(workingDays);
+        model.setSaturday(weekend);
+        model.setSunday(weekend);
+
+        basseinRepository.save(model);
+
+        return ResponseEntity.ok("Басейн үүсгэгдлээ.");
     }
 
     public void authenticate(String username, String password) throws Exception {

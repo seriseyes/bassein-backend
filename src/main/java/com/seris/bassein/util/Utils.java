@@ -8,6 +8,7 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 /**
@@ -17,6 +18,7 @@ import java.time.temporal.ChronoUnit;
  */
 public class Utils {
     public static String regNoFormat = "^[А-ЯӨҮ]{2}[0-9]{2}(0[1-9]||1[0-2]||2[0-9]||3[0-2])(0[1-9]|[12][0-9]|3[01])[0-9]{2}$";
+    public static DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm");
 
     public static String getCurrentUserId() {
         return SecurityContextHolder
@@ -79,5 +81,9 @@ public class Utils {
         cookie.setMaxAge(12 * 3600);//12 цаг
         cookie.setPath("/");
         return cookie;
+    }
+
+    public static String formatRange(LocalTime start, LocalTime end) {
+        return start.format(Utils.timeFormat) + " - " + end.format(Utils.timeFormat);
     }
 }

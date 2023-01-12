@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface ScheduleRepository extends BaseRepository<Schedule> {
     List<Schedule> findAllByCustomer_RegNo(String customerRegNo);
+
+    List<Schedule> findAllByCustomer_RegNoOrCustomer_Phone(String customerRegNo, String customerPhone);
 }
