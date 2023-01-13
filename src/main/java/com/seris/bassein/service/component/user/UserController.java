@@ -57,4 +57,9 @@ public record UserController(
     public ResponseEntity<Response> findAllTeacher() {
         return service.findAllTeacher();
     }
+
+    @GetMapping("/exist/regNo")
+    public ResponseEntity<Response> existByRegNo(@RequestParam("regNo") String regNo) {
+        return service.existByRegNo(regNo);
+    }
 }

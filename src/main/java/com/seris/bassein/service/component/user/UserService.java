@@ -93,4 +93,8 @@ public record UserService(
     public ResponseEntity<Response> findAllTeacher() {
         return Response.success(userRepository.findAllByRoleAndStatus(Role.TEACHER, Status.ACTIVE));
     }
+
+    public ResponseEntity<Response> existByRegNo(String regNo) {
+        return customerRepository.existsByRegNo(regNo) ? Response.success("exists") : Response.error(regNo + " дугаараар үйлчлүүлэгч олдсонгүй");
+    }
 }
