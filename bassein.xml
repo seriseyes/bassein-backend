@@ -1,0 +1,9 @@
+<service>
+    <id>Seris Bassein Backend</id>
+    <name>Seris Bassein Backend</name>
+    <description>Seris Bassein Backend</description>
+    <env name="MYAPP_HOME" value="%BASE%"/>
+    <executable>java</executable>
+    <arguments>-Xmx8g -jar "%BASE%\bassein.jar"</arguments>
+    <logmode>rotate</logmode>
+</service>

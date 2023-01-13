@@ -1,9 +1,0 @@
-<service>
-    <id>Medsoft V7 Core API</id>
-    <name>Medsoft V7 Core API</name>
-    <description>MEDSOFT 7v Alpa Medical software</description>
-    <env name="MYAPP_HOME" value="%BASE%"/>
-    <executable>java</executable>
-    <arguments>-Xmx8g -jar "%BASE%\core-api.jar"</arguments>
-    <logmode>rotate</logmode>
-</service>
