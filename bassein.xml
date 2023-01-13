@@ -3,7 +3,7 @@
     <name>Seris Bassein Backend</name>
     <description>Seris Bassein Backend</description>
     <env name="MYAPP_HOME" value="%BASE%"/>
-    <executable>java</executable>
+    <executable>C:\Program Files\Java\jdk-17.0.5\bin\java.exe</executable>
     <arguments>-Xmx8g -jar "%BASE%\bassein.jar"</arguments>
     <logmode>rotate</logmode>
 </service>
