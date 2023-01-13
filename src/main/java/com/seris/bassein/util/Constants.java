@@ -9,11 +9,11 @@ public class Constants {
     public static String[] httpSecurityUrlAntMatchers = new String[]{
             "/",
             "/assets/**",
-            "/api/auth/**",
+            "/api/auth/**"
     };
 
     /*
-     * Linux: /home/bayarkhuu/Documents/num-hospital
+     * Linux: /home/bayarkhuu/Documents/bassein
      * Windows: c:/bassein
      * */
     public static String path = "c:/bassein";
