@@ -1,11 +1,15 @@
 package com.seris.bassein.model;
 
 import com.seris.bassein.enums.State;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.seris.bassein.util.pdf.StatefulDocument;
+import lombok.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+
+import java.io.File;
+import java.nio.file.Files;
 
 @Data
 @Builder
@@ -51,5 +55,16 @@ public class Response {
                 .message(message)
                 .data(data)
                 .build());
+    }
+
+    @SneakyThrows
+    public static ResponseEntity<byte[]> pdf(StatefulDocument document) {
+        String state = document.getState();
+        byte[] contents = Files.readAllBytes(new File(state).toPath());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData(state, state);
+        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+        return new ResponseEntity<>(contents, headers, HttpStatus.OK);
     }
 }

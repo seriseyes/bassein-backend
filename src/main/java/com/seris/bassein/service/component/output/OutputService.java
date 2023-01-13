@@ -1,20 +1,16 @@
 package com.seris.bassein.service.component.output;
 
 import com.itextpdf.text.pdf.PdfPTable;
+import com.seris.bassein.model.Response;
 import com.seris.bassein.util.Utils;
 import com.seris.bassein.util.pdf.Cells;
 import com.seris.bassein.util.pdf.Defaults;
 import com.seris.bassein.util.pdf.PageTemplate;
 import com.seris.bassein.util.pdf.StatefulDocument;
 import lombok.SneakyThrows;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.nio.file.Files;
 import java.time.LocalDate;
 
 @Service
@@ -27,13 +23,7 @@ public record OutputService() {
         table.addCell(Cells.get(dateFrom.format(Utils.dateFormat)).add(" - ").add(dateTo.format(Utils.dateFormat)));
         document.add(table);
 
-        String state = document.getState();
-        byte[] contents = Files.readAllBytes(new File(state).toPath());
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData(state, state);
-        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-        return new ResponseEntity<>(contents, headers, HttpStatus.OK);
+        return Response.pdf(document);
     }
 
     @SneakyThrows
@@ -44,12 +34,6 @@ public record OutputService() {
         table.addCell(Cells.get(regNo));
         document.add(table);
 
-        String state = document.getState();
-        byte[] contents = Files.readAllBytes(new File(state).toPath());
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData(state, state);
-        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
-        return new ResponseEntity<>(contents, headers, HttpStatus.OK);
+        return Response.pdf(document);
     }
 }
