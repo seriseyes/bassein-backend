@@ -47,7 +47,7 @@ public record ScheduleService(
         return Response.success("Амжилттай хадгаллаа");
     }
 
-    public ResponseEntity<Response> markAsCame(Long id, LocalTime start, LocalTime end) {
+    public ResponseEntity<Response> markAsCame(Long id, LocalTime start, LocalTime end, String locker) {
         Optional<Schedule> model = scheduleRepository.findById(id);
         if (model.isEmpty()) return Response.error("Алдаа гарлаа [S000]");
 
@@ -61,6 +61,7 @@ public record ScheduleService(
         timeTable.setStart(start);
         timeTable.setEnd(end);
         timeTable.setStatus(Status.ACTIVE);
+        timeTable.setLocker(locker);
         timeTableRepository.save(timeTable);
         return Response.success("Үйлдэл амжилттай");
     }
@@ -95,6 +96,7 @@ public record ScheduleService(
                     .teacher(e.getSchedule().getTeacher() == null ? "" : e.getSchedule().getTeacher().getFullname())
                     .targetTime(e.getCreated().format(timeFormat))
                     .day(e.getRange())
+                    .locker(e.getLocker())
                     .timeTable(e)
                     .build();
         }).toList());

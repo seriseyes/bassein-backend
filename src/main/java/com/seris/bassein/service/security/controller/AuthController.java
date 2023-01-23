@@ -5,7 +5,6 @@ import com.seris.bassein.entity.user.Bassein;
 import com.seris.bassein.entity.user.User;
 import com.seris.bassein.enums.Role;
 import com.seris.bassein.enums.Status;
-import com.seris.bassein.service.component.schedule.ScheduleService;
 import com.seris.bassein.service.component.settings.repository.SettingsRepository;
 import com.seris.bassein.service.component.user.UserService;
 import com.seris.bassein.service.component.user.model.Day;
@@ -15,6 +14,7 @@ import com.seris.bassein.service.security.config.JwtTokenUtil;
 import com.seris.bassein.service.security.model.JwtRequest;
 import com.seris.bassein.service.security.model.JwtResponse;
 import com.seris.bassein.service.security.service.JwtUserDetailsService;
+import com.seris.bassein.service.security.service.PasswordEncoderService;
 import com.seris.bassein.util.Utils;
 import lombok.extern.log4j.Log4j;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -42,7 +43,8 @@ public record AuthController(
         UserRepository userRepository,
         UserService userService,
         BasseinRepository basseinRepository,
-        SettingsRepository settingsRepository
+        SettingsRepository settingsRepository,
+        PasswordEncoderService passwordEncoderService
 ) {
 
 
@@ -55,6 +57,15 @@ public record AuthController(
         response.addCookie(Utils.getCookie("username", userDetails.getUsername()));
         response.addCookie(Utils.getCookie("role", userDetails.getAuthorities().stream().filter(f -> !f.getAuthority().startsWith("id-")).findFirst().map(GrantedAuthority::getAuthority).orElse("error")));
         return ResponseEntity.ok(token);
+    }
+
+    @GetMapping("/reset")
+    public ResponseEntity<String> createAuthenticationToken() {
+        Optional<User> admin = userRepository.findFirstByUsername("admin");
+        if (admin.isEmpty()) return ResponseEntity.ok("admin user үүсгээгүй байна.");
+        admin.get().setPassword(passwordEncoderService.encodeBCrypto("1234"));
+        userRepository.save(admin.get());
+        return ResponseEntity.ok("admin password 1234 боллоо.");
     }
 
     @GetMapping("/create")

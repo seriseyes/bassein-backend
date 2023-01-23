@@ -62,4 +62,9 @@ public record UserController(
     public ResponseEntity<Response> existByRegNo(@RequestParam("regNo") String regNo) {
         return service.existByRegNo(regNo);
     }
+
+    @GetMapping("/reset/password")
+    public ResponseEntity<Response> resetPassword(@RequestParam("username") String username, @RequestParam("newPassword") String newPassword) {
+        return service.resetPassword(username, newPassword);
+    }
 }
