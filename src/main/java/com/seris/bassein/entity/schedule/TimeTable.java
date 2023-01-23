@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @EqualsAndHashCode(callSuper = true)
@@ -31,6 +32,11 @@ public class TimeTable extends BaseModel {
     @NotNull
     @NotEmpty
     private String time;
+//
+//    @Attribute("Орсон цаг")
+//    @NotNull
+//    @NotEmpty
+//    private LocalDateTime updated;
 
     @Attribute(value = "Орсон цагийн range (эхлэх)", skip = true)
     @NotNull

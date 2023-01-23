@@ -43,6 +43,7 @@ public record ScheduleService(
     public ResponseEntity<Response> save(Schedule model) {
         Validation validation = Validator.validateEntity(model);
         if (validation.isError()) return validation.toResponseEntity();
+        model.setEnter(0);
         scheduleRepository.save(model);
         return Response.success("Амжилттай хадгаллаа");
     }
