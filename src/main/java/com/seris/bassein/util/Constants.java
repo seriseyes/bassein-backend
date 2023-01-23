@@ -8,6 +8,7 @@ package com.seris.bassein.util;
 public class Constants {
     public static String[] httpSecurityUrlAntMatchers = new String[]{
             "/",
+            "/error",
             "/assets/**",
             "/api/auth/**"
     };
