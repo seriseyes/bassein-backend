@@ -34,8 +34,8 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @Log4j
+@SuppressWarnings("Duplicates")
 public record AuthController(
         JwtTokenUtil jwtTokenUtil,
         JwtUserDetailsService userDetailsService,
@@ -53,9 +53,12 @@ public record AuthController(
         authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
         final JwtResponse token = jwtTokenUtil.generateToken(userDetails);
+        String role = userDetails.getAuthorities().stream().filter(f -> !f.getAuthority().startsWith("id-")).findFirst().map(GrantedAuthority::getAuthority).orElse("error");
+        token.setRole(role);
+        token.setUsername(userDetails.getUsername());
         response.addCookie(Utils.getCookie("token", token.getToken()));
         response.addCookie(Utils.getCookie("username", userDetails.getUsername()));
-        response.addCookie(Utils.getCookie("role", userDetails.getAuthorities().stream().filter(f -> !f.getAuthority().startsWith("id-")).findFirst().map(GrantedAuthority::getAuthority).orElse("error")));
+        response.addCookie(Utils.getCookie("role", role));
         return ResponseEntity.ok(token);
     }
 

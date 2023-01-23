@@ -8,7 +8,6 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/output")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public record OutputController(
         OutputService outputService
 ) {

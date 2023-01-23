@@ -10,7 +10,6 @@ import java.time.LocalTime;
 
 @RestController
 @RequestMapping("/api/schedule")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public record ScheduleController(
         ScheduleService scheduleService
 ) {
