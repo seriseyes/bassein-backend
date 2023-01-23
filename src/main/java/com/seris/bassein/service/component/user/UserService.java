@@ -35,7 +35,7 @@ public record UserService(
             return Response.error("Нэвтрэх нэр давхцаж байна. Өөр нэр сонгоно уу");
         }
 
-        model.setPassword(passwordEncoderService.encodeBCrypto(model.getPassword()));
+        if (model.getId() == null) model.setPassword(passwordEncoderService.encodeBCrypto(model.getPassword()));
         if (model.getStatus() == null) model.setStatus(Status.ACTIVE);
 
         boolean isNew = model.getId() == null;
@@ -96,5 +96,13 @@ public record UserService(
 
     public ResponseEntity<Response> existByRegNo(String regNo) {
         return customerRepository.existsByRegNo(regNo) ? Response.success("exists") : Response.error(regNo + " дугаараар үйлчлүүлэгч олдсонгүй");
+    }
+
+    public ResponseEntity<Response> resetPassword(String username, String newPassword) {
+        Optional<User> user = userRepository.findFirstByUsername(username);
+        if (user.isEmpty()) return Response.error("Хэрэглэгч олдсонгүй [S004]");
+        user.get().setPassword(passwordEncoderService.encodeBCrypto(newPassword));
+        userRepository.save(user.get());
+        return Response.success("Амжилттай шинэчлэгдлээ");
     }
 }

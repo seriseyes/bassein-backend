@@ -45,6 +45,9 @@ public class TimeTable extends BaseModel {
     @Attribute(value = "Орсон цагийн range (дуусах)", skip = true)
     private LocalTime end;
 
+    @Attribute(value = "Локерийн дугаар", skip = true)
+    private String locker;
+
     public String getRange() {
         return Utils.formatRange(start, end);
     }

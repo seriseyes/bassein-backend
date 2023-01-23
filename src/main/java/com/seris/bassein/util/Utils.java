@@ -82,6 +82,7 @@ public class Utils {
         Cookie cookie = new Cookie(name, value);
         cookie.setMaxAge(12 * 3600);//12 цаг
         cookie.setPath("/");
+        cookie.setHttpOnly(true);
         return cookie;
     }
 

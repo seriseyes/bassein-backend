@@ -10,7 +10,6 @@ import java.time.LocalTime;
 
 @RestController
 @RequestMapping("/api/schedule")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public record ScheduleController(
         ScheduleService scheduleService
 ) {
@@ -20,8 +19,8 @@ public record ScheduleController(
     }
 
     @GetMapping("/came")
-    public ResponseEntity<Response> markAsCame(@RequestParam("came") Long id, @RequestParam("start") String start, @RequestParam("end") String end) {
-        return scheduleService.markAsCame(id, LocalTime.parse(start), LocalTime.parse(end));
+    public ResponseEntity<Response> markAsCame(@RequestParam("came") Long id, @RequestParam("start") String start, @RequestParam("end") String end, @RequestParam("locker") String locker) {
+        return scheduleService.markAsCame(id, LocalTime.parse(start), LocalTime.parse(end), locker);
     }
 
     @GetMapping("/cancel")

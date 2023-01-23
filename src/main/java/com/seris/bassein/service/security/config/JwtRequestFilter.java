@@ -38,8 +38,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         String username = null;
         String jwtToken = null;
-        if (cookie != null) {
-            jwtToken = cookie.getValue();
+
+        if (requestTokenHeader != null) jwtToken = requestTokenHeader.substring(7);
+        else if (cookie != null) jwtToken = cookie.getValue();
+
+        if (jwtToken != null) {
             try {
                 username = jwtTokenUtil.getUsernameFromToken(jwtToken);
             } catch (IllegalArgumentException e) {
@@ -50,7 +53,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         } else {
             if (Arrays.stream(Constants.httpSecurityUrlAntMatchers).noneMatch(fx ->
                     request.getRequestURI().replaceAll(" http://localhost:3000", "").startsWith(fx.replaceAll("\\**", ""))))
-                logger.warn("JWT Token not started Bearer string " + request.getRequestURI() + " " + requestTokenHeader);
+                logger.warn("JWT Token not started Bearer string " + request.getRequestURI());
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {

@@ -20,5 +20,6 @@ public class TimeTableDto {
     private String teacher;
     private String targetTime;
     private String day;
+    private String locker;
     private TimeTable timeTable;
 }
